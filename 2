@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+struct Dieta {
+    char Comida[100];
+    float pesoPorcao;
+    int calorias;
+    struct Dieta* prox;
+};
+
+
+struct Dieta* solicitarDadosDieta() {
+    struct Dieta* novComida = (struct Dieta*)malloc(sizeof(struct Dieta));
+    if (novComida == NULL) {
+        printf("Erro ao alocar memória.\n");
+        return NULL;
+    }
+
+    printf("Digite o nome da comida: ");
+    scanf("%s", novComida->Comida);
+
+    printf("Digite o peso da porção (em gramas): ");
+    scanf("%f", &(novComida->pesoPorcao));
+
+    printf("Digite o número de calorias: ");
+    scanf("%d", &(novComida->calorias));
+
+    novComida->prox = NULL;
+
+    return novComida;
+}
+
+
+void adicionarElemento(struct Dieta** inicio) {
+    struct Dieta* novComida = solicitarDadosDieta();
+    if (novComida == NULL) {
+        return;
+    }
+
+    if (*inicio == NULL) {
+        
+        *inicio = novComida;
+    } else {
+        
+        struct Dieta* atual = *inicio;
+        while (atual->prox != NULL) {
+            atual = atual->prox;
+        }
+        atual->prox = novComida;
+    }
+
+    printf("Elemento adicionado com sucesso!\n\n");
+}
+
+
+void listarDadosDieta(struct Dieta* inicio) {
+    if (inicio == NULL) {
+        printf("A lista está vazia.\n");
+        return;
+    }
+
+    printf("Dados da dieta:\n");
+
+    struct Dieta* atual = inicio;
+    while (atual != NULL) {
+        printf("Comida: %s\n", atual->Comida);
+        printf("Peso da porção: %.2fg\n", atual->pesoPorcao);
+        printf("Calorias: %d\n\n", atual->calorias);
+
+        atual = atual->prox;
+    }
+}
+
+
+void liberarMemoria(struct Dieta* inicio) {
+    struct Dieta* atual = inicio;
+    while (atual != NULL) {
+        struct Dieta* proximo = atual->prox;
+        free(atual);
+        atual = proximo;
+    }
+}
+
+int main() {
+    struct Dieta* inicio = NULL;
+    char adicionarMais;
+
+    do {
+        adicionarElemento(&inicio);
+
+        printf("Deseja adicionar mais elementos? (s/n): ");
+        scanf(" %c", &adicionarMais);
+    } while (adicionarMais == 's' || adicionarMais == 'S');
+
+    listarDadosDieta(inicio);
+
+    liberarMemoria(inicio);
+
+    return 0;
+}
